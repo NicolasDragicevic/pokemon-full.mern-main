@@ -3,7 +3,7 @@ const { PokemonModel } = require(`../modules/pokemon`);
 const CreatePokemon = async (req, res) => {
   try {
     const { id, nombre, tipos } = req.body;
-
+//  
     const pokemon = await PokemonModel.create({
       id: id,
       nombre: nombre,
