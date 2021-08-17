@@ -76,13 +76,30 @@ function App() {
       types: newPokemon.types.split(","),
     };
     pokémon.push(objetoPokemon);
-    //manejo de api
-    //
-    /* const api = axios
+    /*     const api = axios
        .get(`https://pokeapi.co/api/v2/pokemon/${objetoPokemon.id}`)
        .then((response) => {
          console.log(response);
-       });*/
+       });  */
+  };
+
+  const fromApiToDB = () => {
+    for (let i = 1; i <= 890; i++) {
+      const api = axios
+        .get(`https://pokeapi.co/api/v2/pokemon/${i}`)
+        .then((response) => {
+          const tipos = response.data.types.map((item) => item.type.name);
+          axios
+            .post(`http://localhost:5000/api/pokemon/guardarPokemon`, {
+              id: response.data.id,
+              nombre: response.data.name,
+              tipos: tipos,
+            })
+            .then((res) => {
+              console.log(res);
+            });
+        });
+    }
   };
   /*  useEffect(() => {
       let mounted = true;
@@ -101,7 +118,7 @@ function App() {
     const listaPokemonesId = [];
     const listaPokemonCards = [];
     for (let i = 0; i < 10; i++) {
-      listaPokemonesId.push(Math.floor(Math.random() * 3));
+      listaPokemonesId.push(Math.floor(Math.random() * 890));
     }
     listaPokemonesId.map((pokeid) => {
       const api = axios
@@ -131,75 +148,88 @@ function App() {
     url: contentpoke[4],
   };
 
-  return (
-    <>
-      {estadopoke ? (
-        <div className="PokeContainer__card-select">
-          <h3>
-            {poke.name} Nº {poke.id}
-          </h3>
-          <div
-            className={`PokeContainer__card-circle`}
-            style={{ background: poke.bg }}
-          >
-            <img src={poke.url} alt={poke.name} />
-          </div>
-          <h5>Tipo: {poke.tipo}</h5>
-        </div>
-      ) : null}
+  const buttonFromApitoDb = () => {
+    return (
+      <div path="/cargarDb">
+        <button onClick={fromApiToDB}>
+          Guardar Pokemon de la Api en la Base de Datos
+        </button>
+      </div>
+    );
+  };
 
-      <div className="PokeContainer">
-        <div className="Jugador1 PokeContainer">
-          Jugador1
-          {cartasPoke1.map((unPokemon) => (
-            <PokemonCard
-              key={uniqid()}
-              id={unPokemon.id}
-              name={unPokemon.name}
-              types={unPokemon.types.toString()}
-              bg={tipos
-                .filter((unTipo) => unTipo.types === unPokemon.types[0])
-                .map((tipoElegido) => tipoElegido.color)}
-              unPokemon={unPokemon}
-              selectPokemon={
-                // Se manda una props que contiene una funcion ( Arrow function )
-                (contentpoke) => setContentpoke(contentpoke)
-              }
-              onOff={(estadopoke) => setEstadopoke(estadopoke)}
-            />
-          ))}
-        </div>
-        <button onClick={repartirPokemon}>Repartir Cartas</button>
+  const home = () => {
+    return (
+      <div path="/home">
+        <>
+          {estadopoke ? (
+            <div className="PokeContainer__card-select">
+              <h3>
+                {poke.name} Nº {poke.id}
+              </h3>
+              <div
+                className={`PokeContainer__card-circle`}
+                style={{ background: poke.bg }}
+              >
+                <img src={poke.url} alt={poke.name} />
+              </div>
+              <h5>Tipo: {poke.tipo}</h5>
+            </div>
+          ) : null}
 
-        <div className="Jugador2 PokeContainer">
-          Jugador2
-          {cartasPoke2.map((unPokemon) => (
-            <PokemonCard
-              key={uniqid()}
-              id={unPokemon.id}
-              name={unPokemon.name}
-              types={unPokemon.types.toString()}
-              bg={tipos
-                .filter((unTipo) => unTipo.types === unPokemon.types[0])
-                .map((tipoElegido) => tipoElegido.color)}
-              unPokemon={unPokemon}
-              selectPokemon={
-                // Se manda una props que contiene una funcion ( Arrow function )
-                (contentpoke) => setContentpoke(contentpoke)
-              }
-              onOff={(estadopoke) => setEstadopoke(estadopoke)}
-            />
-          ))}
-        </div>
-        {/* <FormularioIngreso
+          <div className="PokeContainer">
+            <div className="Jugador1 PokeContainer">
+              Jugador1
+              {cartasPoke1.map((unPokemon) => (
+                <PokemonCard
+                  key={uniqid()}
+                  id={unPokemon.id}
+                  name={unPokemon.name}
+                  types={unPokemon.types.toString()}
+                  bg={tipos
+                    .filter((unTipo) => unTipo.types === unPokemon.types[0])
+                    .map((tipoElegido) => tipoElegido.color)}
+                  unPokemon={unPokemon}
+                  selectPokemon={
+                    // Se manda una props que contiene una funcion ( Arrow function )
+                    (contentpoke) => setContentpoke(contentpoke)
+                  }
+                  onOff={(estadopoke) => setEstadopoke(estadopoke)}
+                />
+              ))}
+            </div>
+            <button onClick={repartirPokemon}>Repartir Cartas</button>
+            <div className="Jugador2 PokeContainer">
+              Jugador2
+              {cartasPoke2.map((unPokemon) => (
+                <PokemonCard
+                  key={uniqid()}
+                  id={unPokemon.id}
+                  name={unPokemon.name}
+                  types={unPokemon.types.toString()}
+                  bg={tipos
+                    .filter((unTipo) => unTipo.types === unPokemon.types[0])
+                    .map((tipoElegido) => tipoElegido.color)}
+                  unPokemon={unPokemon}
+                  selectPokemon={
+                    // Se manda una props que contiene una funcion ( Arrow function )
+                    (contentpoke) => setContentpoke(contentpoke)
+                  }
+                  onOff={(estadopoke) => setEstadopoke(estadopoke)}
+                />
+              ))}
+            </div>
+            {/* <FormularioIngreso
           guardarPokemon={guardarPokemon}
           newPokemon={newPokemon}
           setNewPokemon={setNewPokemon}
         /> */}
-        {console.log(cartasPoke1)}
+            {console.log(cartasPoke1)}
+          </div>
+        </>
       </div>
-    </>
-  );
+    );
+  };
 }
 
 export default App;
