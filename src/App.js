@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PokemonCard from "./components/PokemonCard";
 import FormularioIngreso from "./components/FormularioIngreso";
 import axios from "axios";
+import {Router, Link, navigate} from "@reach/router";
 
 import "./App.scss";
 
@@ -134,6 +135,7 @@ function App() {
           if (listaPokemonCards.length === 10) {
             setCartasPoke1(listaPokemonCards.slice(0, 5)); // ACA ESTABA EL ERROR
             setCartasPoke2(listaPokemonCards.slice(5, 10));
+            //navigate("/cargarDb");  IMPLEMENTAR ESTO SIN QUE SE ROMPA
           }
         });
     });
@@ -148,20 +150,24 @@ function App() {
     url: contentpoke[4],
   };
 
-  const buttonFromApitoDb = () => {
+  const ButtonFromApitoDb = (props) => {
+    const {primerPokemon} = props;
     return (
       <div path="/cargarDb">
         <button onClick={fromApiToDB}>
           Guardar Pokemon de la Api en la Base de Datos
         </button>
+        {primerPokemon}
+        <Link to="/">Volver al Home</Link>
       </div>
     );
   };
 
-  const home = () => {
+  const Home = () => {
     return (
-      <div path="/home">
+      <div path="/">
         <>
+          <Link to="/cargarDb">Cargar Base de Datos</Link>
           {estadopoke ? (
             <div className="PokeContainer__card-select">
               <h3>
@@ -230,6 +236,15 @@ function App() {
       </div>
     );
   };
+
+  return (
+    <>
+    <Router>
+      <Home path="/"></Home>
+      <ButtonFromApitoDb path="/cargarDb" primerPokemon ={cartasPoke1[0].name}></ButtonFromApitoDb>
+    </Router>
+    </>
+  )
 }
 
 export default App;
