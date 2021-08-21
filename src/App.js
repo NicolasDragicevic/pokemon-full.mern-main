@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PokemonCard from "./components/PokemonCard";
 import FormularioIngreso from "./components/FormularioIngreso";
 import axios from "axios";
+import {Router, Link, navigate} from "@reach/router";
 
 import "./App.scss";
 
@@ -132,13 +133,39 @@ function App() {
           });
           console.log(tipos.toString());
           if (listaPokemonCards.length === 10) {
-            setCartasPoke1(listaPokemonCards.slice(0, 5)); // ACA ESTABA EL ERROR
-            setCartasPoke2(listaPokemonCards.slice(5, 10));
+            const listaPokeOrdenada = ordenarPokemones(listaPokemonCards);
+            setCartasPoke1(listaPokeOrdenada.slice(0, 5));
+            setCartasPoke2(listaPokeOrdenada.slice(5, 10));
+            //navigate("/cargarDb");  IMPLEMENTAR ESTO SIN QUE SE ROMPA
           }
         });
     });
     //  }, [])
   };
+
+  function ordenarPokemones(listaPokemones){
+      // array temporal contiene objetos con posición y valor de ordenamiento
+      var mapped = listaPokemones.map(function(el, i) {
+        return { index: i, value: el };
+      });
+
+      // ordenando el array mapeado que contiene los valores reducidos
+      mapped.sort(function(a, b) {
+        if (a.value.types > b.value.types) {
+          return 1;
+        }
+        if (a.value.types < b.value.types) {
+          return -1;
+        }
+        return 0;
+        });
+
+      // contenedor para el orden resultante
+      var result = mapped.map(function(el){
+        return listaPokemones[el.index];
+      });
+      return result;
+    }
 
   let poke = {
     id: contentpoke[0],
@@ -148,20 +175,24 @@ function App() {
     url: contentpoke[4],
   };
 
-  const buttonFromApitoDb = () => {
+  const ButtonFromApitoDb = (props) => {
+    const {primerPokemon} = props;
     return (
       <div path="/cargarDb">
         <button onClick={fromApiToDB}>
           Guardar Pokemon de la Api en la Base de Datos
         </button>
+        {primerPokemon}
+        <Link to="/">Volver al Home</Link>
       </div>
     );
   };
 
-  const home = () => {
+  const Home = () => {
     return (
-      <div path="/home">
+      <div path="/">
         <>
+          <Link to="/cargarDb">Cargar Base de Datos</Link>
           {estadopoke ? (
             <div className="PokeContainer__card-select">
               <h3>
@@ -230,6 +261,16 @@ function App() {
       </div>
     );
   };
+
+  return (
+    <>
+    <Router>
+      <Home path="/"></Home>
+      {/* <ButtonFromApitoDb path="/cargarDb" primerPokemon ={cartasPoke1[0].name}></ButtonFromApitoDb> */}
+      <ButtonFromApitoDb path="/cargarDb"></ButtonFromApitoDb>
+    </Router>
+    </>
+  )
 }
 
 export default App;
